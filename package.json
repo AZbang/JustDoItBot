@@ -1,0 +1,26 @@
+{
+  "name": "just-do-it-bot",
+  "version": "0.1.0",
+  "description": "Telegram Bot For Reminders And Motivation",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AZbang/JustDoItBot.git"
+  },
+  "keywords": [
+    "bot",
+    "telegram",
+    "reminders",
+    "motivation"
+  ],
+  "author": "azbang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AZbang/JustDoItBot/issues"
+  },
+  "homepage": "https://github.com/AZbang/JustDoItBot#readme",
+  "dependencies": {
+    "canvas": "^1.6.2",
+    "node-telegram-bot-api": "^0.25.0"
+  }
+}
