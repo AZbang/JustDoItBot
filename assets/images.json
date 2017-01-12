@@ -1,6 +1,18 @@
 [
 	{
-		"src": "assets/justdoit.png",
+		"src": "assets/justdoit1.png",
+		"w": 200,
+		"h": 200,
+		
+		"font": "40px",
+		"x": 200,
+		"y": 200
+	},
+	{
+		"src": "assets/justdoit2.png",
+		"w": 200,
+		"h": 200,
+
 		"font": "40px",
 		"x": 200,
 		"y": 200

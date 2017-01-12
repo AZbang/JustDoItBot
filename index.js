@@ -1,47 +1,52 @@
 'use strict'
 
-var TelegramBot = require('node-telegram-bot-api');
-var renderImage = require('./modules/renderImage.js');
+const TelegramBot = require('node-telegram-bot-api');
+const Datastore = require('nedb');
 
-var token = '329308405:AAFg4cDIjJ9Fc0M8W8SLNgLYHFXhAjczpFI';
-var bot = new TelegramBot(token, { polling: true });
+const renderImage = require('./modules/renderImage.js');
 
+const token = '329308405:AAFg4cDIjJ9Fc0M8W8SLNgLYHFXhAjczpFI';
+const bot = new TelegramBot(token, { polling: true });
+const db = new Datastore({ filename: 'tasks.db', autoload: true });
 
-var notes = [];
-var isHardMode = false;
+var tasks;
 
-bot.onText(/\/remind (.+) in (.+) of (\d\d)/, function (msg, match) {
+// load db
+db.find({}, (err, docs) => {
+	if(err) throw docs;
+	tasks = docs;
+});
+
+// user text: /remind $text in $time of $day
+bot.onText(/\/remind (.+) in (.+) of (\d+)/, (msg, match) => {
 	var text = match[1];
 	var time = match[2].split(':');
 
 	var d = new Date();
 	var date = [d.getFullYear(), d.getMonth(), match[3] || d.getDay()];
+	var fullDate = new Date(date[0], date[1], +date[2], +time[0], +time[1]); 
 
-	var fullDate = new Date(date[0], date[1], +date[2], +time[0], +time[1], d.getSeconds()); 
+	var data = {uid: msg.chat.id, text: text, date: fullDate};
 
-	bot.sendMessage(msg.chat.id, 'Okay!');
-	notes.push({uid: msg.chat.id, text: text, date: fullDate});
-});
-
-bot.onText(/\/hard_on/, function (msg, match) {
-	isHardMode = true;
-	bot.sendMessage(msg.chat.id, 'Hard Mode On!');
-});
-bot.onText(/\/hard_off/, function (msg, match) {
-	isHardMode = false;
-	bot.sendMessage(msg.chat.id, 'Hard Mode Off!');
+	tasks.push(data);
+	db.insert(data);
+	bot.sendMessage(data.uid, 'Okay!');
 });
 
 
+// updates...
 setInterval(() => {
 	let date = new Date();
 
-	for(let i = 0; i < notes.length; i++) {
-		let note = notes[i];
+	for(let i = 0; i < tasks.length; i++) {
+		let note = tasks[i];
 
 		if(+note.date <= +date) {
 			bot.sendPhoto(note.uid, renderImage(note.text));
-			!isHardMode && notes.splice(i, 1);
+
+			db.remove({ date: note.date }, {}, (err) => {
+				if(err) throw err;
+			});
 		}
 	}
 }, 60000);
