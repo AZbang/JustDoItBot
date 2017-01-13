@@ -32,4 +32,8 @@ var generateImage = (text) => {
 	return canvas.toBuffer();
 }
 
-module.exports = generateImage;
+var sendNoteImage = (bot, chat, text) => {
+	bot.sendPhoto(chat, generateImage(text));
+}
+
+module.exports = sendNoteImage;
